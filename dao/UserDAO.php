@@ -1,7 +1,7 @@
 <?php
 
-  require_once("model/user.php");
-  require_once("model/message.php");
+  require_once("models/User.php");
+  require_once("models/Message.php");
 
   class UserDAO implements UserDAOInterface {
 
@@ -32,12 +32,12 @@
 
     }
 
-    public function create(user $user, $authUser = false) {
+    public function create(User $user, $authUser = false) {
 
       $stmt = $this->conn->prepare("INSERT INTO users(
-          name, lastname, email, password, token, bio
+          name, lastname, email, password, token
         ) VALUES (
-          :name, :lastname, :email, :password, :token, :bio
+          :name, :lastname, :email, :password, :token
         )");
 
       $stmt->bindParam(":name", $user->name);
@@ -56,7 +56,7 @@
 
     }
 
-    public function update(user $user, $redirect = true) {
+    public function update(User $user, $redirect = true) {
 
       $stmt = $this->conn->prepare("UPDATE users SET
         name = :name,
@@ -129,25 +129,37 @@
     }
 
     public function authenticateUser($email, $password) {
-$user = $this->findByEmail($email);
 
-    if ($user) {
-      // Checar se as senhas batem
-      if (password_verify($password, $user->password)) {
-        // Gerar um token e inserir na session
-        $token = $user->generateToken();
-        $this->setTokenToSession($token, false);
-        // Atualizar token no usuário
-        $user->token = $token;
-        $this->update($user, false);
-        return true;
+      $user = $this->findByEmail($email);
+
+      if($user) {
+
+        // Checar se as senhas batem
+        if(password_verify($password, $user->password)) {
+
+          // Gerar um token e inserir na session
+          $token = $user->generateToken();
+
+          $this->setTokenToSession($token, false);
+
+          // Atualizar token no usuário
+          $user->token = $token;
+
+          $this->update($user, false);
+
+          return true;
+
+        } else {
+          return false;
+        }
+
       } else {
+
         return false;
+
       }
-    } else {
-      return false;
+
     }
-  }
 
     public function findByEmail($email) {
 
@@ -255,4 +267,5 @@ $user = $this->findByEmail($email);
       $this->message->setMessage("Senha alterada com sucesso!", "success", "editprofile.php");
 
     }
+
   }

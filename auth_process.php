@@ -2,8 +2,8 @@
 
   require_once("globals.php");
   require_once("db.php");
-  require_once("model/user.php");
-  require_once("model/message.php");
+  require_once("models/User.php");
+  require_once("models/Message.php");
   require_once("dao/UserDAO.php");
 
   $message = new Message($BASE_URL);
@@ -73,15 +73,20 @@
     $email = filter_input(INPUT_POST, "email");
     $password = filter_input(INPUT_POST, "password");
 
+    // Tenta autenticar usuário
+    if($userDao->authenticateUser($email, $password)) {
 
-  // Tenta autenticar usuário
-  if ($userDao->authenticateUser($email, $password)) {
-    $message->setMessage("Seja bem-vindo!", "success", "editprofile.php"
-    );
+      $message->setMessage("Seja bem-vindo!", "success", "editprofile.php");
+
     // Redireciona o usuário, caso não conseguir autenticar
+    } else {
+
+      $message->setMessage("Usuário e/ou senha incorretos.", "error", "back");
+
+    }
+
   } else {
-    $message->setMessage("Usuário e/ou senha incorretos.", "error", "back");
+
+    $message->setMessage("Informações inválidas!", "error", "index.php");
+
   }
-} else {
-  $message->setMessage("Informações inválidas!", "error", "index.php");
-}

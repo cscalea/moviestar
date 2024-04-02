@@ -2,9 +2,9 @@
 
   require_once("globals.php");
   require_once("db.php");
-  require_once("model/movie.php");
-  require_once("model/review.php");
-  require_once("model/message.php");
+  require_once("models/Movie.php");
+  require_once("models/Review.php");
+  require_once("models/Message.php");
   require_once("dao/UserDAO.php");
   require_once("dao/MovieDAO.php");
   require_once("dao/ReviewDAO.php");
@@ -14,42 +14,51 @@
   $movieDao = new MovieDAO($conn, $BASE_URL);
   $reviewDao = new ReviewDAO($conn, $BASE_URL);
 
-  $userData = $userDao->verifyToken(); //RESGATA DADIS DO USUÁRIO
+  // Recebendo o tipo do formulário
+  $type = filter_input(INPUT_POST, "type");
 
-  $type = filter_input(INPUT_POST, "type");  //RECEBE O TIPO DO FORMULÁRIO
+  // Resgata dados do usuário
+  $userData = $userDao->verifyToken();
 
+  if($type === "create") {
 
-
-  if($type === "create"){
+    // Recebendo dados do post
     $rating = filter_input(INPUT_POST, "rating");
     $review = filter_input(INPUT_POST, "review");
-    $users_id = $userData->id;
     $movies_id = filter_input(INPUT_POST, "movies_id");
-    
+    $users_id = $userData->id;
+
     $reviewObject = new Review();
+
     $movieData = $movieDao->findById($movies_id);
- 
-    
-    //VALIDANDO SE O FILME EXISTE
-    if($movieData){
-        if(!empty($rating) && !empty($review) && !empty($movies_id)){  //VERIFICA DADOS MÍNIMOS
 
-            $reviewObject->rating = $rating;
-            $reviewObject->review = $review;
-            $reviewObject->movies_id = $movies_id;
-            $reviewObject->users_id = $users_id;
+    // Validando se o filme existe
+    if($movieData) {
 
-            $reviewDao->create($reviewObject);
+      // Verificar dados mínimos
+      if(!empty($rating) && !empty($review) && !empty($movies_id)) {
 
-        }else{
-            $message->setMessage("Insira uma nota e um comentário!", "error", "index.php");
-            
-        }
-    }else{
-        $message->setMessage("Informações inválidas!", "error", "index.php");
+        $reviewObject->rating = $rating;
+        $reviewObject->review = $review;
+        $reviewObject->movies_id = $movies_id;
+        $reviewObject->users_id = $users_id;
+
+        $reviewDao->create($reviewObject);
+
+      } else {
+
+        $message->setMessage("Você precisa inserir a nota e o comentário!", "error", "back");
+
+      }
+
+    } else {
+
+      $message->setMessage("Informações inválidas!", "error", "index.php");
+
     }
 
-  
-  }else{
+  } else {
+
     $message->setMessage("Informações inválidas!", "error", "index.php");
+
   }

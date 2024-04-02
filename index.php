@@ -1,18 +1,19 @@
 <?php
+  require_once("templates/header.php");
 
-require_once("templates/header.php");
-require_once("dao/MovieDAO.php");
+  require_once("dao/MovieDAO.php");
 
-//DAO dos filmes
-$movieDao = new MovieDAO($conn, $BASE_URL);
+  // DAO dos filmes
+  $movieDao = new MovieDAO($conn, $BASE_URL);
 
-$latestMovies = $movieDao->getLatestMovies();
+  $latestMovies = $movieDao->getLatestMovies();
 
-$actionMovies = $movieDao->getMoviesByCategory("Ação");
+  $actionMovies = $movieDao->getMoviesByCategory("Ação");
 
-$comedyMovies = $movieDao->getMoviesByCategory("Comédia");
+  $comedyMovies = $movieDao->getMoviesByCategory("Comédia");
+
 ?>
-<div id="main-container" class="container-fluid">
+  <div id="main-container" class="container-fluid">
     <h2 class="section-title">Filmes novos</h2>
     <p class="section-description">Veja as críticas dos últimos filmes adicionados no MovieStar</p>
     <div class="movies-container">
@@ -44,9 +45,6 @@ $comedyMovies = $movieDao->getMoviesByCategory("Comédia");
       <?php endif; ?>
     </div>
   </div>
-
 <?php
-
-require_once("templates/footer.php");
-
+  require_once("templates/footer.php");
 ?>

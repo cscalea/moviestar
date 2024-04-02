@@ -2,8 +2,8 @@
 
   require_once("globals.php");
   require_once("db.php");
-  require_once("model/movie.php");
-  require_once("model/message.php");
+  require_once("models/Movie.php");
+  require_once("models/Message.php");
   require_once("dao/UserDAO.php");
   require_once("dao/MovieDAO.php");
 
